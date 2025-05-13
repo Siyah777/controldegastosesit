@@ -1,6 +1,6 @@
 {
-    "name": "controldegastosesit",
-    "short_name": "controldegastosesit",
+    "name": "gastos_app",
+    "short_name": "gastos_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
