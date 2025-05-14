@@ -2,12 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../db/db_helper.dart';
 import 'add_edit_page.dart';
+import '../widgets/balance_summary.dart';
+import '../widgets/transaction_list.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Transacciones'),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          BalanceSummary(),
+          Expanded(child: TransactionList()),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        bottomNavigationBar: BottomNavigationBar(
+  backgroundColor: Colors.white,
+  selectedItemColor: Colors.deepPurple,
+  unselectedItemColor: Colors.grey,
+),
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Transacciones'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Informes'),
+          BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categorías'),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: Colors.deepPurple,
+        child: Icon(Icons.add, size: 30),
+),
+      ),
+    );
+  }
 }
 
 class HomePageState extends State<HomePage> {

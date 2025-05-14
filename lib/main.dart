@@ -12,13 +12,28 @@ class ExpenseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Gastos Personales',
+      
       theme: ThemeData(
-        primarySwatch: Colors.teal,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+  primaryColor: Colors.deepPurple,
+  scaffoldBackgroundColor: Colors.grey[200],
+  textTheme: TextTheme(
+    headline6: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    bodyText2: TextStyle(fontSize: 16),
+  ),
+),
       ),
       home: HomePage(),
     );
   }
 }
+
+import 'package:google_fonts/google_fonts.dart';
+
+Text(
+  'Saldo total',
+  style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
+),
+
 
