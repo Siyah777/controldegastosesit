@@ -16,24 +16,21 @@ class ExpenseApp extends StatelessWidget {
       title: 'Gastos Personales',
       
       theme: ThemeData(
-  primaryColor: Colors.deepPurple,
-  scaffoldBackgroundColor: Colors.grey[200],
+  primaryColor: Colors.black,
+  scaffoldBackgroundColor: Colors.greenAccent[200],
   textTheme: TextTheme(
-    headline6: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    bodyText2: TextStyle(fontSize: 16),
+    titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    displayMedium: TextStyle(fontSize: 20),
   ),
 ),
-      ),
-      home: HomePage(),
-    );
+      //),
+home: HomePage(),
+);
   }
 }
 
-import 'package:google_fonts/google_fonts.dart';
 
-Text(
-  'Saldo total',
-  style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
-),
+
+
 
 

@@ -2,57 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../db/db_helper.dart';
 import 'add_edit_page.dart';
-import '../widgets/balance_summary.dart';
-import '../widgets/transaction_list.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  HomePageState createState() => HomePageState();
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Transacciones'),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          BalanceSummary(),
-          Expanded(child: TransactionList()),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        bottomNavigationBar: BottomNavigationBar(
-  backgroundColor: Colors.white,
-  selectedItemColor: Colors.deepPurple,
-  unselectedItemColor: Colors.grey,
-),
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Transacciones'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Informes'),
-          BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categorías'),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.deepPurple,
-        child: Icon(Icons.add, size: 30),
-),
-      ),
-    );
-  }
+  HomePageState createState() => HomePageState(); 
 }
 
 class HomePageState extends State<HomePage> {
+  
   List<Map<String, dynamic>> _transactions = [];
   double _total = 0;
 
-  // Refresca las transacciones y calcula el total
   void _refreshTransactions() async {
     final data = await DatabaseHelper.instance.getTransactions();
     double total = 0;
-    // Usamos un bucle for en lugar de forEach
     for (var t in data) {
       total += t['amount'];
     }
@@ -68,13 +33,11 @@ class HomePageState extends State<HomePage> {
     _refreshTransactions();
   }
 
-  // Elimina una transacción por su id
   void _deleteTransaction(int id) async {
     await DatabaseHelper.instance.deleteTransaction(id);
     _refreshTransactions();
   }
 
-  // Muestra un diálogo de confirmación antes de eliminar
   void _showDeleteDialog(int id) {
     showDialog(
       context: context,
@@ -101,7 +64,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  // Navega a la página de agregar o editar transacción
   void _navigateToAddEdit([Map<String, dynamic>? transaction]) async {
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => AddEditTransactionPage(transaction: transaction),
@@ -113,39 +75,125 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gastos Totales: \$${_total.toStringAsFixed(2)}'),
+        title: const Text('Control de Gastos'),
       ),
-      body: ListView.builder(
-        itemCount: _transactions.length,
-        itemBuilder: (ctx, i) {
-          final t = _transactions[i];
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            child: ListTile(
-              title: Text(t['description']),
-              subtitle: Text(
-                  "${t['category']} - ${DateFormat.yMd().format(DateTime.parse(t['date']))}"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () => _navigateToAddEdit(t),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _showDeleteDialog(t['id']),
-                  ),
-                ],
-              ),
+      body: Stack(
+        children: [
+          // Imagen de fondo
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/gastos.jpg',
+              fit: BoxFit.cover,
             ),
-          );
-        },
+          ),
+
+          // Contenido encima de la imagen
+          Column(
+            children: [
+              // Mensaje de bienvenida
+              Container(
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                color: Colors.greenAccent.shade100,
+                child: const Text(
+                  'Bienvenido a tu panel de gastos',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+
+              // Gastos totales debajo del mensaje
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                width: double.infinity,
+                color: Colors.greenAccent.shade100,
+                child: Text(
+                  'Gastos Totales: \$${_total.toStringAsFixed(2)}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+
+              // Lista de transacciones
+                 Expanded(
+                child: ListView.builder(
+                  itemCount: _transactions.length,
+                  itemBuilder: (ctx, i) {
+                    final t = _transactions[i];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      child: ListTile(
+                        title: Text(
+                          t['description'],
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${t['category']} - ${DateFormat.yMd().format(DateTime.parse(t['date']))}",
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Monto: \$${t['amount'].toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                color: Colors.teal,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _navigateToAddEdit(t),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _showDeleteDialog(t['id']),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Parte inferior
+              Container(
+                padding: const EdgeInsets.all(12),
+                width: double.infinity,
+                color: Colors.greenAccent.shade200,
+                child: const Text(
+                  '© 2025 Control de Gastos app ESIT Grupo 11, Todos los derechos reservados',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddEdit(),
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+  padding: const EdgeInsets.only(bottom: 60), // Ajusta para no tapar el footer
+  child: FloatingActionButton(
+    onPressed: () => _navigateToAddEdit(),
+    backgroundColor: Colors.greenAccent,        // Color del botón
+    foregroundColor: Colors.white,       // Color del ícono
+    elevation: 6,                        // Sombra
+    shape: RoundedRectangleBorder(      // Estilo redondeado
+      borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Icon(Icons.add),        // Ícono
       ),
+    ),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
+
     );
   }
 }

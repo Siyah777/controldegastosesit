@@ -87,55 +87,97 @@ class AddEditTransactionPageState extends State<AddEditTransactionPage> {
       appBar: AppBar(
         title: Text(isEditing ? 'Editar Gasto' : 'Nuevo Gasto'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: formKey,
-          child: ListView(
+      body: Stack(
+        children: [
+          // Imagen de fondo
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/checklist.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // Contenido principal encima de la imagen
+          Column(
             children: [
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Descripción'),
-                validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
+              // Encabezado decorativo
+              Container(
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                color: Colors.greenAccent.shade100,
+                child: Text(
+                  isEditing ? 'Edita tu gasto' : 'Registra un nuevo gasto',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-              TextFormField(
-                controller: amountController,
-                decoration: const InputDecoration(labelText: 'Monto'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (v) {
-                  if (v == null || v.isEmpty) return 'Campo requerido';
-                  if (double.tryParse(v) == null) return 'Número inválido';
-                  return null;
-                },
-              ),
-              DropdownButtonFormField<String>(
-                value: selectedCategory,
-                items: categories
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (v) => setState(() => selectedCategory = v!),
-                decoration: const InputDecoration(labelText: 'Categoría'),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text('Fecha: ${DateFormat.yMd().format(selectedDate)}'),
+
+              // Formulario en scroll
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: descriptionController,
+                          decoration: const InputDecoration(labelText: 'Descripción'),
+                          validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
+                        ),
+                        TextFormField(
+                          controller: amountController,
+                          decoration: const InputDecoration(labelText: 'Monto'),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Campo requerido';
+                            if (double.tryParse(v) == null) return 'Número inválido';
+                            return null;
+                          },
+                        ),
+                        DropdownButtonFormField<String>(
+                          value: selectedCategory,
+                          items: categories
+                              .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                              .toList(),
+                          onChanged: (v) => setState(() => selectedCategory = v!),
+                          decoration: const InputDecoration(labelText: 'Categoría'),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text('Fecha: ${DateFormat.yMd().format(selectedDate)}'),
+                            ),
+                            TextButton(
+                              onPressed: pickDate,
+                              child: const Text('Seleccionar Fecha'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                        onPressed: submitForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.greenAccent, // Color de fondo del botón
+                          foregroundColor: Colors.black,       // Color del texto
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                          ),
+                          elevation: 4, // Sombra
+                        ),
+                        child: Text(isEditing ? 'Guardar Cambios' : 'Agregar Gasto'),
+                       ),
+                      ],
+                    ),
                   ),
-                  TextButton(
-                    onPressed: pickDate,
-                    child: const Text('Seleccionar Fecha'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: submitForm,
-                child: Text(isEditing ? 'Guardar Cambios' : 'Agregar Gasto'),
+                ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
