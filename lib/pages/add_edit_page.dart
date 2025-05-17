@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../db/db_helper.dart';
+import 'package:flutter/services.dart';
 
 class AddEditTransactionPage extends StatefulWidget {
   final Map<String, dynamic>? transaction;
@@ -129,10 +130,17 @@ class AddEditTransactionPageState extends State<AddEditTransactionPage> {
                           controller: amountController,
                           decoration: const InputDecoration(labelText: 'Monto'),
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')), // solo números positivos con hasta dos decimales
+                          ],
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Campo requerido';
-                            if (double.tryParse(v) == null) return 'Número inválido';
-                            return null;
+                          if (v == null || v.isEmpty) return 'Campo requerido';
+
+                          final parsed = double.tryParse(v);
+                          if (parsed == null) return 'Número inválido';
+                          if (parsed <= 0) return 'El monto debe ser mayor que cero';
+
+                          return null;
                           },
                         ),
                         DropdownButtonFormField<String>(
